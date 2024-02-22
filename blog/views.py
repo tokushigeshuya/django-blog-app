@@ -11,10 +11,22 @@ class PostListView(ListView):
   model = Post
   # HTMLを指定
   template_name = 'blog/post_list.html'
+  # ---------------　記事を更新日でソートする ---------------------
+  
+  # querysetはデータベースから取得したデータを格納している
+  def get_queryset(self):
+    posts = super().get_queryset()
+    # 更新日順にする「-」が必要
+    return posts.order_by('-updated_at')
+  
+  # ---------------　記事を更新日でソートする END------------------
+
 
 class PostDetailView(DetailView):
   model = Post
   template_name = 'blog/post_detail.html'
+  # ---------　ログインユーザーor公開記事のみを表示させる------------
+
   # クラスベースビューが持っているメソッド querysetはあるとは限らないのでデフォルトでNone
   def get_object(self, queryset=None):
     # 詳細の記事を返す 
@@ -25,4 +37,6 @@ class PostDetailView(DetailView):
     else:
       # 条件に入らない時は404エラーを返す（raiseはエラー発生時に返す）
       raise Http404
+    
+  # --------　ログインユーザーor公開記事のみを表示させる END --------
     
