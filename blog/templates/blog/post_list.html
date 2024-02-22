@@ -3,24 +3,19 @@
 {% block content %}
 
   {% for post in object_list %}
-    {% if post.is_published %}
-    <h2>{{ post.title }}</h2>
-    <!-- truncatecharsは取り出す文字数の設定30文字制限 -->
-    <p>{{ post.content | truncatechars:30 }}</p>
-    <p>{{ post.created_at }}</p>
-    <p>{{ post.updated_at }}</p>
-    <!-- ページごとにアクセスURLを変更するのでpost.pk -->
-      <p><a href="{% url 'post-detail' post.pk %}">続きを読む</a></p>
-    {% else %}
-      {% if user.is_authenticated %}
+    {% if post.is_published or user.is_authenticated %}
+      
+      {% if not post.is_published %}
       <span class="badge bg-danger">下書き</span>
+      {% endif %}
+        
       <h2>{{ post.title }}</h2>
       <!-- truncatecharsは取り出す文字数の設定30文字制限 -->
       <p>{{ post.content | truncatechars:30 }}</p>
       <p>{{ post.created_at }}</p>
       <p>{{ post.updated_at }}</p>
+      <!-- ページごとにアクセスURLを変更するのでpost.pk -->
       <p><a href="{% url 'post-detail' post.pk %}">続きを読む</a></p>
-      {% endif %}
     {% endif %}
   {% endfor %}
 
