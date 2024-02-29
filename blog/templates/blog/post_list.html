@@ -1,8 +1,18 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
+  
+{% comment %}
+ get_context_data(self, **kwargs)でカテゴリーを登録
+ 存在する場合はh1を表示させる
+{% endcomment %}
+  {% if category %}
+    <h1>{{category}}<i>-category-</i></h1>
+    <hr>
+  {% endif %}
+    
 
-  {% for post in object_list %}
+  {% for post in posts %}
     {% if post.is_published or user.is_authenticated %}
       
       {% if not post.is_published %}

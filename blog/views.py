@@ -1,10 +1,10 @@
 from typing import Any
 from django.db.models.base import Model as Model
 from django.db.models.query import QuerySet
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import Http404
 from django.views.generic import ListView,DetailView
-from blog.models import Post
+from blog.models import Post,Category
 
 class PostListView(ListView):
   # モデルの継承
@@ -12,7 +12,7 @@ class PostListView(ListView):
   # HTMLを指定
   template_name = 'blog/post_list.html'
   # ---------------　記事を更新日でソートする ---------------------
-  
+
   # querysetはデータベースから取得したデータを格納している
   def get_queryset(self):
     posts = super().get_queryset()
@@ -40,3 +40,22 @@ class PostDetailView(DetailView):
     
   # --------　ログインユーザーor公開記事のみを表示させる END --------
     
+class CategoryPostListView(ListView):
+  # カテゴリで検索しても表示するのはブログ記事なので使用するモデルはPOST
+  model = Post
+  template_name = "blog/post_list.html"
+  # オブジェクトリストのpost_listとなっていた、HTMLで取り出す値の名前を変更する。（html側でobject_listではなくpostsでforからの取り出しが可能）
+  context_object_name = "posts"
+
+  def get_queryset(self):
+    # トップページでアクセスのあったカテゴリーのURLをキーワードwargsから取得して変数に入れる
+    slug = self.kwargs['slug']
+    # 存在しないカテゴリーの場合は404エラーを発生させる ※カテゴリーが存在した場合はself.categoryに格納
+    self.category = get_object_or_404(Category, slug=slug)
+    return super().get_queryset().filter(category=self.category)
+  
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context["category"] = self.category
+    # print(context)
+    return context

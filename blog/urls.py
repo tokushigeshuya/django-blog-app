@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path
-from blog.views import PostListView,PostDetailView
+from blog.views import PostListView,PostDetailView,CategoryPostListView
 
 # Class-based views
 #     1. Add an import:  from other_app.views import Home
@@ -9,4 +9,5 @@ from blog.views import PostListView,PostDetailView
 urlpatterns = [
     path('', PostListView.as_view(), name='post-list'),
     path('post/<int:pk>/', PostDetailView.as_view(), name='post-detail'),
+    path('category/<str:slug>/', CategoryPostListView.as_view(), name='category-post-list'),
 ]
