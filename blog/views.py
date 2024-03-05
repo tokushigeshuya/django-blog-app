@@ -4,13 +4,14 @@ from django.db.models.query import QuerySet
 from django.shortcuts import render, get_object_or_404
 from django.http import Http404
 from django.views.generic import ListView,DetailView
-from blog.models import Post,Category
+from blog.models import Post,Category,Tag
 
 class PostListView(ListView):
   # モデルの継承
   model = Post
   # HTMLを指定
   template_name = 'blog/post_list.html'
+  context_object_name = "posts"
   # ---------------　記事を更新日でソートする ---------------------
 
   # querysetはデータベースから取得したデータを格納している
@@ -48,20 +49,36 @@ class CategoryPostListView(ListView):
   context_object_name = "posts"
 
   def get_queryset(self):
-    print("=" * 30)
+    # print("=" * 30)
     # クラスで使用しているselfは自分自身という意味（このクラス自体）
-    print(vars(self))
+    # print(vars(self))
     # {'slug': 'django'}この形がself.kwargs。これのkeyをself.kwargs['slug']で入れてる
-    print(self.kwargs)
+    # print(self.kwargs)
 
     # トップページでアクセスのあったカテゴリーのURLをキーワードwargsから取得して変数に入れる
     slug = self.kwargs['slug']
     # 存在しないカテゴリーの場合は404エラーを発生させる ※カテゴリーが存在した場合はself.categoryに格納
     self.category = get_object_or_404(Category, slug=slug)
     return super().get_queryset().filter(category=self.category)
-  
+  # 任意の値を渡してあげる
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
     context["category"] = self.category
-    print(context)
+    # print(context)
     return context
+  
+class TagPostListView(ListView):
+  model = Post
+  template_name = "blog/post_list.html"
+  context_object_name = "posts"
+  # タグの存在チェックと絞り込み
+  def get_queryset(self):
+    slug = self.kwargs['slug']
+    self.tag = get_object_or_404(Tag, slug=slug)
+    return super().get_queryset().filter(tag=self.tag)
+  # タグをqueryに追加してオブジェクトを使用可能にする
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['tag'] = self.tag
+    return context
+  

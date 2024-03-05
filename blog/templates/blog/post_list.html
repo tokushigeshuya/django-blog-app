@@ -10,9 +10,13 @@
     <h1>{{category}}<i>-category-</i></h1>
     <hr>
   {% endif %}
+  {% if tag %}
+    <h1>{{tag}}<i>-tag-</i></h1>
+    <hr>
+  {% endif %}
     
 
-  {% for post in object_list %}
+  {% for post in posts %}
     {% if post.is_published or user.is_authenticated %}
       
       {% if not post.is_published %}
