@@ -48,6 +48,12 @@ class CategoryPostListView(ListView):
   context_object_name = "posts"
 
   def get_queryset(self):
+    print("=" * 30)
+    # クラスで使用しているselfは自分自身という意味（このクラス自体）
+    print(vars(self))
+    # {'slug': 'django'}この形がself.kwargs。これのkeyをself.kwargs['slug']で入れてる
+    print(self.kwargs)
+
     # トップページでアクセスのあったカテゴリーのURLをキーワードwargsから取得して変数に入れる
     slug = self.kwargs['slug']
     # 存在しないカテゴリーの場合は404エラーを発生させる ※カテゴリーが存在した場合はself.categoryに格納
@@ -57,5 +63,5 @@ class CategoryPostListView(ListView):
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
     context["category"] = self.category
-    # print(context)
+    print(context)
     return context
