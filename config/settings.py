@@ -63,6 +63,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # 自分作成したものを追加 blog配下のファイル名+関数名
+                'blog.context_processors.common',
             ],
         },
     },
