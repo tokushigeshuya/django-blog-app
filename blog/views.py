@@ -1,4 +1,5 @@
 from typing import Any
+from django.db.models import Q
 from django.db.models.base import Model as Model
 from django.db.models.query import QuerySet
 from django.shortcuts import render, get_object_or_404
@@ -80,5 +81,29 @@ class TagPostListView(ListView):
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
     context['tag'] = self.tag
+    return context
+  
+# 検索機能
+class SearchPostListView(ListView):
+  model = Post
+  template_name = "blog/post_list.html"
+  context_object_name = "posts"
+
+  def get_queryset(self):
+    # 検索されない可能性もあるので空白の""　ここで設定したものをHTMLのname属性に設定する
+    self.query = self.request.GET.get('query') or ""
+    queryset = super().get_queryset()
+    # 検索された内容によってquerysetの中身を変更する
+    if self.query:
+      queryset = queryset.filter(
+        # 検索条件 タイトルの中に検索キーワードが入っていたら
+        # containsは含むという意味（iをつけると大文字小文字の区別が無しになる）　タイトルの中にqueryが含まれていたら
+        Q(title__icontains=self.query) | Q(content__icontains=self.query)
+      )
+    return queryset
+  # htmlで検索結果の表示に使用する
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['query'] = self.query
     return context
   
