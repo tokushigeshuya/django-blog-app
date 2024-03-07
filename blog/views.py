@@ -100,6 +100,9 @@ class SearchPostListView(ListView):
         # containsは含むという意味（iをつけると大文字小文字の区別が無しになる）　タイトルの中にqueryが含まれていたら
         Q(title__icontains=self.query) | Q(content__icontains=self.query)
       )
+    # ログインユーザの判定。※ログインしていない場合は公開記事のみを検索する
+    if not self.request.user.is_authenticated:
+      queryset = queryset.filter(is_published=True)
     return queryset
   # htmlで検索結果の表示に使用する
   def get_context_data(self, **kwargs):
