@@ -13,6 +13,8 @@ class PostListView(ListView):
   # HTMLを指定
   template_name = 'blog/post_list.html'
   context_object_name = "posts"
+  # ページネーション
+  paginate_by = 1
   # ---------------　記事を更新日でソートする ---------------------
 
   # querysetはデータベースから取得したデータを格納している
@@ -27,6 +29,7 @@ class PostListView(ListView):
 class PostDetailView(DetailView):
   model = Post
   template_name = 'blog/post_detail.html'
+  paginate_by = 1
   # ---------　ログインユーザーor公開記事のみを表示させる------------
 
   # クラスベースビューが持っているメソッド querysetはあるとは限らないのでデフォルトでNone
@@ -48,6 +51,7 @@ class CategoryPostListView(ListView):
   template_name = "blog/post_list.html"
   # オブジェクトリストのpost_listとなっていた、HTMLで取り出す値の名前を変更する。（html側でobject_listではなくpostsでforからの取り出しが可能）
   context_object_name = "posts"
+  paginate_by = 1
 
   def get_queryset(self):
     # print("=" * 30)
@@ -72,6 +76,7 @@ class TagPostListView(ListView):
   model = Post
   template_name = "blog/post_list.html"
   context_object_name = "posts"
+  paginate_by = 1
   # タグの存在チェックと絞り込み
   def get_queryset(self):
     slug = self.kwargs['slug']
@@ -88,6 +93,7 @@ class SearchPostListView(ListView):
   model = Post
   template_name = "blog/post_list.html"
   context_object_name = "posts"
+  paginate_by = 1
 
   def get_queryset(self):
     # 検索されない可能性もあるので空白の""　ここで設定したものをHTMLのname属性に設定する
@@ -103,10 +109,13 @@ class SearchPostListView(ListView):
     # ログインユーザの判定。※ログインしていない場合は公開記事のみを検索する
     if not self.request.user.is_authenticated:
       queryset = queryset.filter(is_published=True)
+    # 検索でHITした件数
+    self.post_count = len(queryset)
     return queryset
   # htmlで検索結果の表示に使用する
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
     context['query'] = self.query
+    context['post_count'] = self.post_count
     return context
   

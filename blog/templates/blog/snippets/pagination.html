@@ -1,0 +1,30 @@
+{% comment %} テンプレートタグを使用できるように {% endcomment %}
+{% load blog %}
+
+{% comment %} 使い回し可能 {% endcomment %}
+{% comment %} もし「前」の状態を持っていたら、、、 {% endcomment %}
+{% if page_obj.has_previous %}
+{% comment %} page_objから前のページの番号を取得 {% endcomment %}
+    {% comment %} <a href="?page={{ page_obj.previos_page_number}}">前へ</a> {% endcomment %}
+    <a href="?{% replace request 'page' page_obj.previos_page_number %}">前へ</a>
+    <!-- request, key('page'), value(page_obj.previos_page_number) -->
+{% endif %}
+
+{% comment %} 全てのページNo.を取得 {% endcomment %}
+{% for num in page_obj.paginator.page_range %}
+
+    {% comment %} ページオブジェクトのナンバーが一致していたら {% endcomment %}
+    {% if page_obj.number == num %}
+        <span>{{num}}</span>
+    {% else %}
+        {% comment %} <a href="?page={{num}}">{{num}}</a> {% endcomment %}
+        <a href="?{% replace request 'page' num %}">{{num}}</a>
+    {% endif %}
+
+{% endfor %}
+    
+
+{% if page_obj.has_next %}
+    {% comment %} <a href="?page={{ page_obj.next_page_number}}">次へ</a> {% endcomment %}
+    <a href="?{% replace request 'page' next_page_number %}">次へ</a>
+{% endif %}
